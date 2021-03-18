@@ -32,7 +32,7 @@ METADATA
                 "exists": "true"
             },
             {
-                "field":"[concat('tags[', 'Recycle Date', ']')]",
+                "field": "[concat('tags[', parameters('tagName'), ']')]",
                 "exists": "true"
             },
             {
@@ -46,13 +46,27 @@ METADATA
         "details": {
           "type": "Microsoft.Compute/virtualMachines",
           "existenceCondition": {
-              "value": "[field(concat('tags[', 'Recycle Date', ']'))]",
+              "value": "[field(concat('tags[', parameters('tagName'), ']'))]",
               "greater": "[utcNow()]"
           }
         }
       }
   }
 POLICY_RULE
+
+  parameters = <<PARAMETERS
+  {
+    "tagName": {
+    "type": "String",
+    "metadata": {
+        "displayName": "Recycle Date Tag Name",
+        "decription": "Name of the tag used for Recycle Date"
+      },
+    "defaultValue": ""
+    }
+  }
+PARAMETERS
+
 }
 
 output "policydefinition_audit-cattle-vm-age" {
