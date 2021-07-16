@@ -27,26 +27,23 @@ METADATA
             {
               "field": "type",
               "equals": "Microsoft.Compute/virtualMachineScaleSets"
+            },
+            {
+              "anyOf": [
+                  {
+                    "field": "Microsoft.Compute/VirtualMachineScaleSets/osDisk.vhdContainers",
+                    "exists": "true"
+                  },
+                  {
+                    "field": "Microsoft.Compute/VirtualMachineScaleSets/osdisk.imageUrl",
+                    "exists": "true"
+                  }
+              ]
             }
         ]
     },
       "then": {
-        "effect": "auditIfNotExists",
-        "details": {
-          "type": "Microsoft.Compute/virtualMachineScaleSets",
-          "existenceCondition": {
-           "anyOf": [
-              {
-                "field": "Microsoft.Compute/VirtualMachineScaleSets/osDisk.vhdContainers",
-                "exists": "False"
-              },
-              {
-                "field": "Microsoft.Compute/VirtualMachineScaleSets/osdisk.imageUrl",
-                "exists": "False"
-              }
-           ]
-          }
-        }
+        "effect": "audit"
       }
   }
 POLICY_RULE

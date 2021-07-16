@@ -29,56 +29,29 @@ METADATA
               "equals": "Microsoft.Compute/virtualMachines"
             },
             {
-              "anyOf": [
+            "allOf": [
                 {
-                  "field": "Microsoft.Compute/virtualMachines/osProfile.linuxConfiguration",
-                  "exists": "true"
+                  "field":"[concat('tags[', 'VM Type', ']')]",
+                  "exists": "false"
                 },
                 {
-                  "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
-                  "like": "Linux*"
+                "anyOf": [
+                    {
+                      "field":"[concat('tags[', 'VM Type', ']')]",
+                      "notLike": "Pet"
+                    },
+                    {
+                      "field":"[concat('tags[', 'VM Type', ']')]",
+                      "notLike": "Cattle"
+                    }
+                  ]
                 }
-              ]
-            },
-            {
-              "anyOf": [
-                {
-                  "field": "Microsoft.Compute/virtualMachines/osProfile.windowsConfiguration",
-                  "exists": "true"
-                },
-                {
-                  "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
-                  "like": "Windows*"
-                }
-              ]
-            }
+             ]
+           }
         ]
     },
       "then": {
-        "effect": "auditIfNotExists",
-        "details": {
-          "type": "Microsoft.Compute/virtualMachines",
-          "existenceCondition": {
-           "allOf": [
-              {
-                "field":"[concat('tags[', 'VM Type', ']')]",
-                "exists": "True"
-              },
-              {
-              "anyOf": [
-                  {
-                    "field":"[concat('tags[', 'VM Type', ']')]",
-                    "like": "Pet"
-                  },
-                  {
-                    "field":"[concat('tags[', 'VM Type', ']')]",
-                    "Like": "Cattle"
-                  }
-                ]
-              }
-           ]
-          }
-        }
+        "effect": "audit"
       }
   }
 POLICY_RULE

@@ -2,7 +2,7 @@ resource "azurerm_policy_definition" "pd-audit-vmss-sse" {
   name         = "pd-audit-vmss-sse"
   policy_type  = "Custom"
   mode         = "All"
-  display_name = "Audit Virtual Machines Scaleset must be deployed with Encyption at host, ADE must not be used."
+  display_name = "Audit Prod Virtual Machines Scaleset must be deployed with Encyption at host, ADE must not be used."
   description  = "Use encryption at host to get end-to-end encryption for your virtual machine for supported resgion, Azure Disk encyption (ADE) must not be used." 
 
   management_group_name = var.root_management_group_name
@@ -27,21 +27,44 @@ METADATA
             {
               "field": "type",
               "equals": "Microsoft.Compute/virtualMachineScaleSets"
+            },
+            {
+              "field": "Microsoft.Compute/virtualMachineScaleSets/virtualMachineProfile.securityProfile.encryptionAtHost",
+              "notEquals": "true"
+            },
+            {
+            "not": {
+                  "field":"[concat('tags[', parameters('tagName'), ']')]",
+                  "equals": "[parameters('tagValue')]"
+                }
             }
         ]
     },
       "then": {
-        "effect": "auditIfNotExists",
-        "details": {
-          "type": "Microsoft.Compute/virtualMachineScaleSets",
-          "existenceCondition": {
-            "field": "Microsoft.Compute/virtualMachineScaleSets/virtualMachineProfile.securityProfile.encryptionAtHost",
-            "equals": "true"
-          }
-        }
+        "effect": "audit"
       }
   }
 POLICY_RULE
+  parameters = <<PARAMETERS
+  {
+    "tagName": {
+    "type": "String",
+    "metadata": {
+        "displayName": "Tag Name",
+        "decription": "Name of the tag, such as 'environment'"
+      },
+    "defaultValue": ""
+    },
+    "tagValue": {
+    "type": "String",
+    "metadata": {
+        "displayName": "Tag Value",
+        "decription": "Tag Value, such as 'Yes or No'"
+      },
+      "defaultValue": ""
+    }
+  }
+PARAMETERS
 }
 
 output "policydefinition_pd-audit-vmss-sse" {

@@ -27,18 +27,15 @@ METADATA
             {
               "field": "type",
               "equals": "Microsoft.Compute/VirtualMachineScaleSets"
+            },
+            {
+              "field": "Microsoft.Compute/virtualMachineScaleSets/virtualMachineProfile.storageProfile.imageReference.id",
+              "exists": "false"
             }
         ]
     },
       "then": {
-        "effect": "auditIfNotExists",
-        "details": {
-          "type": "Microsoft.Compute/VirtualMachineScaleSets",
-          "existenceCondition": {
-            "field": "Microsoft.Compute/imageId",
-            "contains": "[concat(subscription().id,'/resourcegroups/')]"
-          }
-        }
+        "effect": "audit"
       }
   }
 POLICY_RULE

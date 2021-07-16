@@ -27,34 +27,31 @@ METADATA
             {
               "field": "type",
               "equals": "Microsoft.Compute/VirtualMachineScaleSets"
-            }
+            },
+            {
+            "allOf": [
+                {
+                  "field":"[concat('tags[', 'VM Type', ']')]",
+                  "exists": "false"
+                },
+                {
+                "anyOf": [
+                    {
+                      "field":"[concat('tags[', 'VM Type', ']')]",
+                      "notLike": "Pet"
+                    },
+                    {
+                      "field":"[concat('tags[', 'VM Type', ']')]",
+                      "notLike": "Cattle"
+                    }
+                  ]
+                }
+             ]
+           }
         ]
     },
       "then": {
-        "effect": "auditIfNotExists",
-        "details": {
-          "type": "Microsoft.Compute/VirtualMachineScaleSets",
-          "existenceCondition": {
-           "allOf": [
-              {
-                "field":"[concat('tags[', 'VM Type', ']')]",
-                "exists": "True"
-              },
-              {
-              "anyOf": [
-                  {
-                    "field":"[concat('tags[', 'VM Type', ']')]",
-                    "like": "Pet"
-                  },
-                  {
-                    "field":"[concat('tags[', 'VM Type', ']')]",
-                    "Like": "Cattle"
-                  }
-                ]
-              }
-           ]
-          }
-        }
+        "effect": "audit"
       }
   }
 POLICY_RULE

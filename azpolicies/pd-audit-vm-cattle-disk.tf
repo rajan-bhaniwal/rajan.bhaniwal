@@ -29,30 +29,6 @@ METADATA
               "equals": "Microsoft.Compute/virtualMachines"
             },
             {
-              "anyOf": [
-                {
-                  "field": "Microsoft.Compute/virtualMachines/osProfile.linuxConfiguration",
-                  "exists": "true"
-                },
-                {
-                  "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
-                  "like": "Linux*"
-                }
-              ]
-            },
-            {
-              "anyOf": [
-                {
-                  "field": "Microsoft.Compute/virtualMachines/osProfile.windowsConfiguration",
-                  "exists": "true"
-                },
-                {
-                  "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
-                  "like": "Windows*"
-                }
-              ]
-            },
-            {
                   "field":"[concat('tags[', 'VM Type', ']')]",
                   "Like": "Cattle"
             },

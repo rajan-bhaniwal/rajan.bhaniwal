@@ -29,40 +29,13 @@ METADATA
               "equals": "Microsoft.Compute/virtualMachines"
             },
             {
-              "anyOf": [
-                {
-                  "field": "Microsoft.Compute/virtualMachines/osProfile.linuxConfiguration",
-                  "exists": "true"
-                },
-                {
-                  "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
-                  "like": "Linux*"
-                }
-              ]
-            },
-            {
-              "anyOf": [
-                {
-                  "field": "Microsoft.Compute/virtualMachines/osProfile.windowsConfiguration",
-                  "exists": "true"
-                },
-                {
-                  "field": "Microsoft.Compute/virtualMachines/storageProfile.osDisk.osType",
-                  "like": "Windows*"
-                }
-              ]
+              "field": "Microsoft.Compute/virtualMachines/storageProfile.imageReference.id",
+              "exists": "false"
             }
         ]
     },
       "then": {
-        "effect": "auditIfNotExists",
-        "details": {
-          "type": "Microsoft.Compute/virtualMachines",
-          "existenceCondition": {
-            "field": "Microsoft.Compute/imageId",
-            "contains": "[concat(subscription().id,'/resourcegroups/')]"
-          }
-        }
+        "effect": "audit"
       }
   }
 POLICY_RULE

@@ -2,7 +2,7 @@ resource "azurerm_policy_definition" "pd-audit-vmss-sse-cmk" {
   name         = "pd-audit-vmss-sse-cmk"
   policy_type  = "Custom"
   mode         = "All"
-  display_name = "Audit Virtual Machines Scaleset with data classification Restricted must have SSE+CMK encryption enabled."
+  display_name = "Audit Virtual Machines Scaleset with data classification Restricted or Higher must have SSE+CMK encryption enabled."
   description  = "Use encryption at host to get end-to-end encryption with customer managed keys for virtual machine with data classification Restricted, Azure Disk encyption (ADE) must not be used." 
 
   management_group_name = var.root_management_group_name
@@ -23,34 +23,73 @@ METADATA
   policy_rule = <<POLICY_RULE
   {
     "if": {
-        "allOf": [
-            {
-              "field": "type",
-              "equals": "Microsoft.Compute/VirtualMachineScaleSets"
-            },
-            {
-              "anyOf": [
-                  {
-                    "field":"[concat('tags[', 'Data Classification', ']')]",
-                    "Like": "Restricted"
-                  },
-                  {
-                    "field":"[concat('tags[', 'Data Classification', ']')]",
-                    "Like": "Highly Restricted"
-                  }
-                ]
-            }
-        ]
+        "anyOf": [
+          {
+              "allOf": [
+              {
+                  "field": "type",
+                  "equals": "Microsoft.Compute/virtualMachineScaleSets"
+                },
+                {
+                  "field": "Microsoft.Compute/virtualMachineScaleSets/virtualMachineProfile.storageProfile.osDisk.managedDisk.diskEncryptionSet.id",
+                  "exists": "false"
+                },
+                {
+                  "not":
+                      {
+                        "anyOf": [
+                            {
+                              "field":"[concat('tags[', 'Data Classification', ']')]",
+                              "like": "Public"
+                            },
+                            {
+                              "field":"[concat('tags[', 'Data Classification', ']')]",
+                              "like": "Internal"
+                            }
+                          ]
+                      }
+                }
+             ]
+          },
+          {
+            "allOf": [
+              {
+                "field": "type",
+                "equals": "Microsoft.Compute/virtualMachineScaleSets"
+              },
+              {
+                "count": {
+                  "field": "Microsoft.Compute/virtualMachineScaleSets/virtualMachineProfile.storageProfile.dataDisks[*]"
+                },
+                "greater": 0
+              },
+              {
+                "not": {
+                  "field": "Microsoft.Compute/virtualMachineScaleSets/virtualMachineProfile.storageProfile.dataDisks[*].managedDisk.diskEncryptionSet.id",
+                  "exists": "true"
+                }
+              },
+              {
+                "not":
+                    {
+                      "anyOf": [
+                          {
+                            "field":"[concat('tags[', 'Data Classification', ']')]",
+                            "like": "Public"
+                          },
+                          {
+                            "field":"[concat('tags[', 'Data Classification', ']')]",
+                            "like": "Internal"
+                          }
+                        ]
+                    }
+              }
+            ]
+          }
+      ]
     },
       "then": {
-        "effect": "auditIfNotExists",
-        "details": {
-          "type": "Microsoft.Compute/virtualMachines",
-          "existenceCondition": {
-            "field": "Microsoft.Compute/virtualMachineScaleSets/virtualMachines/storageProfile.osDisk.managedDisk.diskEncryptionSet.id",
-            "exists": "true"
-          }
-        }
+        "effect": "audit"
       }
   }
 POLICY_RULE
