@@ -1,0 +1,64 @@
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  branches:
+    include:
+    - main
+
+  paths:
+    include:
+    - csv
+    - scripts
+    exclude:
+    - template
+    - .azure-pipelines.yml
+pool:
+  name: hosted-win2019
+
+variables:
+  system_accesstoken: $(System.AccessToken)
+
+steps:
+- checkout: self
+  submodules: true
+  persistCredentials: true
+
+- task: AzurePowerShell@5
+  displayName: 'Apply Policy Exemptions'
+  inputs:
+    azureSubscription: HUB
+    ScriptType: FilePath
+    ScriptPath: '$(System.DefaultWorkingDirectory)\scripts\policy-exemption.ps1'
+    ScriptArguments: '-csvPath $(System.DefaultWorkingDirectory)\csv\PolicyExemption.csv'
+    azurePowerShellVersion: LatestVersion
+  env:
+    System_DefaultWorkingDirectory : $(System.DefaultWorkingDirectory)
+
+- script: |
+   ECHO "Setting GIT config.."
+   git config --global user.name "$(Build.RequestFor)"
+   git config --global user.email "$(Build.RequestForEmail)"
+   
+   ECHO "Check GIT status.."
+   git status
+   
+   ECHO "GIT Pull..."
+   git checkout -b main
+   git pull origin main
+   
+   ECHO "Git Add..."
+   git add -A
+   
+   ECHO "Check Git Status..."
+   git status
+   
+   ECHO "Commiting the changes..."
+   git commit -m "CSV file updated."
+   
+   ECHO "Pushing the changes..."
+   git push origin main
+   
+  displayName: 'Resetting CSV file'
+  env:
+      system_accesstoken: $(System.AccessToken)
