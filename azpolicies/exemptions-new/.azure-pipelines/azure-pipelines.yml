@@ -12,6 +12,7 @@ variables:
   storage_container_name: 'policy'
   storage_rsg: 'WEU-RSG-PRIV-DNS'
   storage_subscription: 'rack-multi-hub-nonprod'
+  csv_path: '$(System.DefaultWorkingDirectory)\csv\PolicyExemption.csv'
 
 steps:
 - checkout: self
@@ -57,7 +58,7 @@ steps:
 
 - task: AzurePowerShell@5
   displayName: 'Remove CSV Blob from Storage'
-  enabled: false
+  enabled: true
   inputs:
     azureSubscription: HUB
     ScriptType: FilePath
@@ -66,7 +67,20 @@ steps:
     azurePowerShellVersion: LatestVersion
   env:
     System_DefaultWorkingDirectory : $(System.DefaultWorkingDirectory)
-        
+
+- task: AzurePowerShell@5
+  displayName: 'Clear CSV from Local Repo'
+  enabled: true
+  inputs:
+    azureSubscription: HUB
+    ScriptType: InlineScript
+    Inline: |
+     #Clear CSV File
+     (Get-Content $(csv_path) |  Select-Object -First 1) | Out-File $(csv_path) -Force
+    azurePowerShellVersion: LatestVersion
+  env:
+   System_DefaultWorkingDirectory : $(System.DefaultWorkingDirectory)
+
 - script: |
     ECHO "Setting GIT config.."
     git config --global user.name "$(Build.RequestFor)"
@@ -90,9 +104,9 @@ steps:
 
     ECHO "Customization Committed Successfully"
   workingDirectory: '$(System.DefaultWorkingDirectory)'
-  displayName: 'Resetting CSV file'
+  displayName: 'Git Push Updated CSV file'
   continueOnError: true
-  enabled: false
+  enabled: true
   env:
       system_accesstoken: $(System.AccessToken)
 

@@ -1,8 +1,6 @@
 Param(
   [Parameter(Mandatory=$false,Position=1,
                 HelpMessage = 'CSV File Name')][string]$csvName = "policy-exemptions.csv",
-  [Parameter(Mandatory=$false,Position=1,
-                HelpMessage = 'CSV File Path')][string]$csvPath = "policy-exemptions.csv",
   [Parameter(Mandatory=$false,Position=2,
                 HelpMessage = 'SQL Server Name')][string]$sqlServer = "sqlserverpolicy.database.windows.net",
   [Parameter(Mandatory=$false,Position=3,
@@ -139,9 +137,6 @@ else
             {
                 #Add Policy Exemption on Azure SQLDB, calling 'addPolicyExemptionsToSQLDB' function 
                 $outputPolicyExemptionTable = addPolicyExemptionsToSQLdb -policyExemption $policyExemption -outputPolicyExemption $outputPolicyExemption
-
-                #Clear CSV File
-                (Get-Content $csvPath |  Select-Object -First 1) | Out-File $csvPath -Force
             }
         }
         Catch
