@@ -1,14 +1,14 @@
 Param(
   [Parameter(Mandatory=$true,Position=1,
                 HelpMessage = 'Full Runbook Path')][string]$runbookPath,
-  [Parameter(Mandatory=$false,Position=2,
-                HelpMessage = 'Automation Resource Group')][string]$automationAccountRSG = "WEU-RSG-PRIV-DNS",
-  [Parameter(Mandatory=$false,Position=3,
-                HelpMessage = 'Automation Name')][string]$automationAccountName = "testautopol",
-  [Parameter(Mandatory=$false,Position=4,
-                HelpMessage = 'Runbook Name')][string]$runbookName = "rb-policy-exemption",
-  [Parameter(Mandatory=$false,Position=5,
-                HelpMessage = 'Automation Subscription Name')][string]$subscriptionName = "rack-multi-hub-nonprod"
+  [Parameter(Mandatory=$true,Position=2,
+                HelpMessage = 'Automation Resource Group')][string]$automationAccountRSG,
+  [Parameter(Mandatory=$true,Position=3,
+                HelpMessage = 'Automation Name')][string]$automationAccountName,
+  [Parameter(Mandatory=$true,Position=4,
+                HelpMessage = 'Runbook Name')][string]$runbookName,
+  [Parameter(Mandatory=$true,Position=5,
+                HelpMessage = 'Automation Subscription Name')][string]$subscriptionName
 )
 
 

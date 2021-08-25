@@ -1,22 +1,22 @@
 Param(
   [Parameter(Mandatory=$true,Position=1,
-                HelpMessage = 'BlobName')][string]$blobName = "policy-exemptions.csv",
-  [Parameter(Mandatory=$false,Position=2,
-                HelpMessage = 'Storage Resource Group')][string]$storagersg = "WEU-RSG-PRIV-DNS",
-  [Parameter(Mandatory=$false,Position=3,
-                HelpMessage = 'Storage Name')][string]$storagename = "policyexemptions",
-  [Parameter(Mandatory=$false,Position=4,
-                HelpMessage = 'Storage Name')][string]$storagecontainer = "policy",
-  [Parameter(Mandatory=$false,Position=5,
-                HelpMessage = 'Storage Subscription Name')][string]$subscriptionname = "rack-multi-hub-nonprod"
+                HelpMessage = 'BlobName')][string]$blobName,
+  [Parameter(Mandatory=$true,Position=2,
+                HelpMessage = 'Storage Resource Group')][string]$storagersg,
+  [Parameter(Mandatory=$true,Position=3,
+                HelpMessage = 'Storage Name')][string]$storageName,
+  [Parameter(Mandatory=$true,Position=4,
+                HelpMessage = 'Storage Name')][string]$storageContainer,
+  [Parameter(Mandatory=$true,Position=5,
+                HelpMessage = 'Storage Subscription Name')][string]$subscriptionName
 )
 
 
 #select subscription 
-Select-AzSubscription $subscriptionname
+Select-AzSubscription $subscriptionName
 
 #Get storage context
-$saContext = (Get-AzStorageAccount -Name $storagename -ResourceGroupName $storagersg).Context
+$saContext = (Get-AzStorageAccount -Name $storageName -ResourceGroupName $storagersg).Context
 
 # Remove storage blob
-Remove-AzStorageBlob -Blob $blobName -Container $storagecontainer -Context $saContext -Force
+Remove-AzStorageBlob -Blob $blobName -Container $storageContainer -Context $saContext -Force

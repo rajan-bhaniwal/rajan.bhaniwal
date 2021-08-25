@@ -11,8 +11,18 @@ variables:
   storage_name: 'policyexemptions'
   storage_container_name: 'policy'
   storage_rsg: 'WEU-RSG-PRIV-DNS'
-  storage_subscription: 'rack-multi-hub-nonprod'
+  storage_blob_name: 'policyExemptions.csv'
+  resource_subscription: 'rack-multi-hub-nonprod'
   csv_path: '$(System.DefaultWorkingDirectory)\csv\PolicyExemption.csv'
+  automation_account: 
+  automation_account_rsg:
+  automation_runbook_name:
+  automation_runbook_path: '$(System.DefaultWorkingDirectory)\runbooks\policy-exemption.ps1'
+  sqlserver_name:
+  sqldb_name:
+  sqltable_name:
+  client_id:
+  tenant_id:
 
 steps:
 - checkout: self
@@ -27,10 +37,12 @@ steps:
     azureSubscription: HUB
     ScriptType: FilePath
     ScriptPath: '$(System.DefaultWorkingDirectory)\scripts\uploadblob.ps1'
-    ScriptArguments: '-csvPath $(System.DefaultWorkingDirectory)\csv\PolicyExemption.csv'
+    ScriptArguments: '-csvPath $(csv_path) -storagersg $(storage_rsg) -storageName $(storage_name) -storageContainer $(storage_container_name) -blobName $(storage_blob_name) -subscriptionName $(resource_subscription)'
     azurePowerShellVersion: LatestVersion
   env:
     System_DefaultWorkingDirectory : $(System.DefaultWorkingDirectory)
+    ARM_CLIENT_ID: $(client_id)
+    ARM_CLIENT_SECRET: $()
 
 - task: AzurePowerShell@5
   displayName: 'Publish Runbook to Automation Account'
@@ -39,10 +51,12 @@ steps:
     azureSubscription: HUB
     ScriptType: FilePath
     ScriptPath: '$(System.DefaultWorkingDirectory)\scripts\publish.ps1'
-    ScriptArguments: '-runbookPath $(System.DefaultWorkingDirectory)\runbooks\policy-exemption.ps1'
+    ScriptArguments: '-runbookPath $(automation_runbook_path) -automationAccountRSG $(automation_account_rsg) -automationAccountName $(automation_account) -runbookName $(automation_runbook_name) -subscriptionName $(resource_subscription)'
     azurePowerShellVersion: LatestVersion
   env:
     System_DefaultWorkingDirectory : $(System.DefaultWorkingDirectory)
+    ARM_CLIENT_ID: $(client_id)
+    ARM_CLIENT_SECRET: $()
 
 - task: AzurePowerShell@5
   displayName: 'Apply Policy Exemptions'
@@ -51,10 +65,12 @@ steps:
     azureSubscription: HUB
     ScriptType: FilePath
     ScriptPath: '$(System.DefaultWorkingDirectory)\scripts\startrunbook.ps1'
-    ScriptArguments: '-runbookParameters @{"csvPath"="C:\test\policyExemption.csv";"sqlServer"="sqlserverpolicy.database.windows.net"}'
+    ScriptArguments: '-automationAccountRSG $(automation_account_rsg) -automationAccountName $(automation_account) -runbookName $(automation_runbook_name) -runbookParameters @{"csvName"="$(storage_blob_name)";"sqlServer"="$(sqlserver_name)";"sqlDBName"="$(sqldb_name)";"sqlTableName"="$(sqltable_name)";"storagersg"="$(storage_rsg)";"storageName"="$(storage_name)";"storageContainer"="$(storage_container_name)";"storageSubscription"="$(resource_subscription)"} -subscriptionName $(resource_subscription)'
     azurePowerShellVersion: LatestVersion
   env:
     System_DefaultWorkingDirectory : $(System.DefaultWorkingDirectory)
+    ARM_CLIENT_ID: $(client_id)
+    ARM_CLIENT_SECRET: $()
 
 - task: AzurePowerShell@5
   displayName: 'Remove CSV Blob from Storage'
@@ -67,6 +83,8 @@ steps:
     azurePowerShellVersion: LatestVersion
   env:
     System_DefaultWorkingDirectory : $(System.DefaultWorkingDirectory)
+    ARM_CLIENT_ID: $(client_id)
+    ARM_CLIENT_SECRET: $()
 
 - task: AzurePowerShell@5
   displayName: 'Clear CSV from Local Repo'

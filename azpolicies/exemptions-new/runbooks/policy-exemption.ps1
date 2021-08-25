@@ -1,20 +1,20 @@
 Param(
-  [Parameter(Mandatory=$false,Position=1,
-                HelpMessage = 'CSV File Name')][string]$csvName = "policy-exemptions.csv",
-  [Parameter(Mandatory=$false,Position=2,
-                HelpMessage = 'SQL Server Name')][string]$sqlServer = "sqlserverpolicy.database.windows.net",
-  [Parameter(Mandatory=$false,Position=3,
-                HelpMessage = 'SQL DB Name')][string]$sqlDBName = "policyexemption",
-  [Parameter(Mandatory=$false,Position=4,
-                HelpMessage = 'SQL Table Name')][string]$sqlTableName = "policyexemptions",
-  [Parameter(Mandatory=$false,Position=5,
-                HelpMessage = 'Storage Resource Group')][string]$storagersg = "WEU-RSG-PRIV-DNS",
-  [Parameter(Mandatory=$false,Position=6,
-                HelpMessage = 'Storage Name')][string]$storagename = "policyexemptions",
-  [Parameter(Mandatory=$false,Position=7,
-                HelpMessage = 'Storage Name')][string]$storagecontainer = "policy",
-  [Parameter(Mandatory=$false,Position=8,
-                HelpMessage = 'Storage Subscrption Name')][string]$storageSubscription = "rack-multi-hub-nonprod"
+  [Parameter(Mandatory=$true,Position=1,
+                HelpMessage = 'CSV File Name')][string]$csvName,
+  [Parameter(Mandatory=$true,Position=2,
+                HelpMessage = 'SQL Server Name')][string]$sqlServer,
+  [Parameter(Mandatory=$true,Position=3,
+                HelpMessage = 'SQL DB Name')][string]$sqlDBName,
+  [Parameter(Mandatory=$true,Position=4,
+                HelpMessage = 'SQL Table Name')][string]$sqlTableName,
+  [Parameter(Mandatory=$true,Position=5,
+                HelpMessage = 'Storage Resource Group')][string]$storagersg,
+  [Parameter(Mandatory=$true,Position=6,
+                HelpMessage = 'Storage Name')][string]$storageName,
+  [Parameter(Mandatory=$true,Position=7,
+                HelpMessage = 'Storage Container Name')][string]$storageContainer,
+  [Parameter(Mandatory=$true,Position=8,
+                HelpMessage = 'Storage Subscrption Name')][string]$storageSubscription
 )
 
 #Get access token for SQLDB (Managed Identity)
@@ -35,13 +35,13 @@ $guid = (new-guid).guid.Substring(0,8)
 #Error action 
 $ErrorActionPreference = "Stop"
 
-function getcsvblob
+function getCsvBlob
 {
 
    try{
 
         #Import CSV File
-        $saContext = (Get-AzStorageAccount -Name $storagename -ResourceGroupName $storagersg).Context
+        $saContext = (Get-AzStorageAccount -Name $storageName -ResourceGroupName $storagersg).Context
 
         $blobtemppath = "$env:temp\policy$guid"
         # download the csv file to the temp folder in runbook
@@ -49,7 +49,7 @@ function getcsvblob
         {
             $tempfolder= New-Item -ItemType directory -Path $blobtemppath
         }
-        $blobcontent = Get-AzStorageBlobContent -Blob $csvName -Container $storagecontainer -Destination $blobtemppath -Context $saContext -Force
+        $blobcontent = Get-AzStorageBlobContent -Blob $csvName -Container $storageContainer -Destination $blobtemppath -Context $saContext -Force
 
         $csvcontent = Import-Csv "$blobtemppath\$csvName"
 
@@ -112,7 +112,7 @@ VALUES ('$($policyExemption.ResourceId)','$($outputPolicyExemption.dateAdded)','
 }
 
 #call function to pull CSV
-$policyExemptions = getcsvblob
+$policyExemptions = getCsvBlob
 
 if ($policyExemptions -eq $null)
 {
