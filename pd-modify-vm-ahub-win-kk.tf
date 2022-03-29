@@ -28,10 +28,6 @@ METADATA
               "field": "type",
               "equals": "Microsoft.Compute/virtualMachines"
             },
-            {
-              "value":"[resourcegroup().tags[parameters('tagName')]]",
-              "equals": "[parameters('tagValue')]"
-            },
             {   
               "not": {
                   "value": "[resourcegroup().name]",
@@ -102,20 +98,6 @@ POLICY_RULE
         "Windows_Client"
       ],
       "defaultValue": "Windows_Server"
-    },
-    "tagName": {
-    "type": "String",
-    "metadata": {
-        "displayName": "Tag Name",
-        "decription": "Name of the tag, such as 'environment'"
-      }
-    },
-    "tagValue": {
-    "type": "String",
-    "metadata": {
-        "displayName": "Tag Value",
-        "decription": "Tag Value, such as 'Yes or No'"
-      }
     },
     "clientResourceGroupNameContains": {
     "type": "String",
