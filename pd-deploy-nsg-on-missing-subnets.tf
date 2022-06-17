@@ -60,7 +60,7 @@ METADATA
             ]
     },
   "then": {
-    "effect": "DeployIfNotExists",
+    "effect": "[parameters('effect')]",
     "details": {
     "type": "Microsoft.Network/virtualNetworks",
     "evaluationDelay": "PT60M",
@@ -211,6 +211,18 @@ METADATA
 POLICY_RULE
   parameters  = <<PARAMETERS
   {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "Enable or disable the execution of the policy"
+        },
+        "allowedValues": [
+          "DeployIfNotExists",
+          "Disabled"
+        ],
+        "defaultValue": "DeployIfNotExists"
+      }
   }
 PARAMETERS
 }
