@@ -1,0 +1,74 @@
+resource "azurerm_policy_definition" "audit-purview-pub" {
+  name         = "audit-purview-pub"
+  policy_type  = "Custom"
+  mode         = "All"
+  display_name = "Azure Purview accounts must not enable public network access"
+  description  = "Azure Purview accounts must not enable public network access. Use private link to access data and control plane."
+
+
+  management_group_name = var.root_management_group_name
+
+  metadata = <<METADATA
+    {
+    "scd-ctrl-ref": "AZR-PV-CTRL-04, AZR-PV-CTRL-05, AZR-PV-CTRL-06, AZR-PV-CTRL-11",
+    "fim-l2-ctrl": "NSEC.1, DUSE.3",
+    "priority": "P2",
+    "source" : "SCD",
+    "exclude-reporting": "true",
+    "exclude-from-alerts": "true"
+    }
+
+METADATA
+
+
+  policy_rule = <<POLICY_RULE
+    {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.Purview/accounts"
+        },
+        {
+        "anyOf": [
+            {
+              "field": "Microsoft.Purview/accounts/publicNetworkAccess",
+              "exists": "false"
+            },
+            {
+              "field": "Microsoft.Purview/accounts/publicNetworkAccess",
+              "notEquals": "Disabled"
+            }
+          ]
+        }
+      ]
+    },
+    "then": {
+      "effect": "[parameters('effect')]"
+    }
+  }
+POLICY_RULE
+
+  parameters = <<PARAMETERS
+  {
+    "effect": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Effect",
+        "description": "Enable or disable the execution of the policy"
+      },
+      "allowedValues": [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      "defaultValue": "Audit"
+    }
+  }
+PARAMETERS
+
+}
+
+output "policydefinition_audit-purview-pub" {
+  value = azurerm_policy_definition.audit-purview-pub
+}
