@@ -2,8 +2,8 @@ resource "azurerm_policy_definition" "audit-ml-vnet" {
   name         = "audit-ml-vnet"
   policy_type  = "Custom"
   mode         = "All"
-  display_name = "Azure Machine Learning Compute Cluster and Instance is behind virtual network"
-  description  = "Azure Machine Learning Compute Cluster and Instance is behind virtual network. Azure Virtual Network deployment provides enhanced security and isolation for your Azure Machine Learning Compute Clusters and Instances, as well as subnets, access control policies, and other features to further restrict access.When am Azure Machine Learning Compute instance is configured with a virtual network, it is not publicly addressable and can only be accessed from virtual machines and applications within the virtual network."
+  display_name = "Azure Machine Learning Compute Cluster and Instance must be behind virtual network"
+  description  = "Azure Machine Learning Compute Cluster and Instance must be behind virtual network. Azure Virtual Network deployment provides enhanced security and isolation for your Azure Machine Learning Compute Clusters and Instances, as well as subnets, access control policies, and other features to further restrict access.When am Azure Machine Learning Compute instance is configured with a virtual network, it is not publicly addressable."
 
 
   management_group_name = var.root_management_group_name
