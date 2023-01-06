@@ -83,7 +83,10 @@ POLICY_RULE
         "description": "List of HSBC Global Sanctioned Country Code. https://github.com/rgl/azure-content/blob/master/articles/cdn/cdn-country-codes.md"
       },
       "defaultValue": [
-      "AL"
+      "IR",
+      "CU",
+      "SY",
+      "KP"
       ]
     }
   }
