@@ -1,9 +1,9 @@
 resource "azurerm_policy_definition" "audit-afd-waf" {
-  name         = "audit-afd-waf"
-  policy_type  = "Custom"
-  mode         = "All"
-  display_name = "Azure Web Application Firewall must be enabled for Azure Front Door entry-points"
-  description  = "This policy audits Web Application Firewall for Azure Front Door entry-points. Azure Web Application Firewall (WAF) in front of public facing web applications for additional inspection of incoming traffic. Web Application Firewall (WAF) provides centralized protection of your web applications from common exploits and vulnerabilities such as SQL injections, Cross-Site Scripting, local and remote file executions. You can also restrict access to your web applications by countries, IP address ranges, and other http(s) parameters via custom rules."
+  name                  = "audit-afd-waf"
+  policy_type           = "Custom"
+  mode                  = "All"
+  display_name          = "Azure Web Application Firewall must be enabled for Azure Front Door entry-points"
+  description           = "This policy audits Web Application Firewall for Azure Front Door entry-points. Azure it provides centralized protection for web applications from common exploits and vulnerabilities such as SQL injections, Cross-Site Scripting, local and remote file executions. You can also restrict access to your web applications by countries, IP address ranges, and other http(s) parameters via custom rules."
   management_group_name = var.root_management_group_name
 
   metadata = <<METADATA
