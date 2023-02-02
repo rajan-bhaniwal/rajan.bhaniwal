@@ -89,9 +89,10 @@ POLICY_RULE
           "displayName": "Azure Service Type to Audit",
           "description": "The list of Azure Service Type to Audit"
       },
+      "allowedValues": [  
           "Microsoft.Sql/servers",
           "Microsoft.DBforMySQL/servers",
-          "Microsoft.DBforMySQL/flexibleServers"
+          "Microsoft.DBforMySQL/flexibleServers",
           "Microsoft.DBforPostgreSQL/servers",
           "Microsoft.DBForPostgreSql/flexibleServers"
         ],      
